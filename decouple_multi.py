@@ -35,6 +35,8 @@ Huomaa, että kaikki muu `decouple`-paketin tarjoama sisältö tarjotaan
 sellaisenaan myös tässä paketissa.
 '''
 
+import itertools
+
 from decouple import *
 
 
@@ -62,6 +64,9 @@ class MultiConfig(Config):
       cast = self._cast_boolean
     return cast(value)
     # def get
+
+  def __iter__(self):
+    return itertools.chain.from_iterable(self.tiedostot)
 
   # class MultiConfig
 
@@ -113,6 +118,12 @@ class AutoConfig(AutoConfig):
       self._load(self.search_path + (self._caller_path(), ))
     return self.config(*args, **kwargs)
     # def __call__
+
+  def __iter__(self):
+    if not self.config:
+      self._load(self.search_path + (self._caller_path(), ))
+    return iter(self.config)
+    # def __iter__
 
   def __repr__(self):
     return (
